@@ -9,7 +9,6 @@ from rich.panel import Panel
 from rich import box
 import re
 
-# --- Настройка логгирования с категорией ---
 log_dir = Path("logs")
 log_dir.mkdir(exist_ok=True)
 log_file = log_dir / "install.log"
@@ -32,7 +31,6 @@ log_error = CategoryAdapter(base_logger, {"category": "error"})
 
 console = Console()
 
-# --- Проверка доступности по порту ---
 def is_ssh_open(host, port=22):
     try:
         with socket.create_connection((host, port), timeout=5):
@@ -40,7 +38,6 @@ def is_ssh_open(host, port=22):
     except:
         return False
 
-# --- Упрощенное подключение по ssh ---
 def connect_ssh(host, key_path, user="root"):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -51,7 +48,6 @@ def connect_ssh(host, key_path, user="root"):
         log_connect.error(f"Не удалось подключиться к {host}: {e}")
         return None
 
-# --- Получение простой метрики загрузки ---
 def get_server_status(ssh):
     stdin, stdout, stderr = ssh.exec_command("grep 'cpu ' /proc/stat && free -m")
     cpu_line = stdout.readline()
@@ -64,8 +60,7 @@ def get_server_status(ssh):
     mem_vals = list(map(int, mem_line.strip().split()[1:]))
     mem_usage = 100 * mem_vals[1] / mem_vals[0]
     return cpu_usage, mem_usage
-
-# --- Определение дистрибутива Linux ---
+    
 def get_linux_distribution(ssh):
     stdin, stdout, stderr = ssh.exec_command("cat /etc/os-release")
     output = stdout.read().decode()
@@ -91,7 +86,6 @@ def install_postgresql_debian(ssh):
     ]
     execute_commands(ssh, commands)
 
-# --- Установка PostgreSQL на AlmaLinux/CentOS ---
 def install_postgresql_alma(ssh):
     commands = [
         "sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm",
@@ -102,7 +96,6 @@ def install_postgresql_alma(ssh):
     ]
     execute_commands(ssh, commands)
 
-# --- Универсальная функция выполнения команд ---
 def execute_commands(ssh, commands):
     for cmd in commands:
         log_install.info(f"Выполняется команда: {cmd}")
@@ -122,23 +115,15 @@ def execute_commands(ssh, commands):
         if exit_status != 0:
             log_error.error(f"Команда завершилась с кодом {exit_status}")
 
-# --- Настройка PostgreSQL для внешних соединений и пользователя student ---
 def configure_postgresql_access(ssh, allowed_ip):
     commands = [
-        # Разрешаем внешние подключения
         r"sudo sed -i 's/#listen_addresses = \'localhost\'/listen_addresses = \'*\'/g' /etc/postgresql/17/main/postgresql.conf"
-        # Добавляем правило в pg_hba.conf для подключения пользователя student только с указанного IP
         f"echo \"host    all             student         {allowed_ip}/32         md5\" | sudo tee -a /etc/postgresql/17/main/pg_hba.conf || echo \"host    all             student         {allowed_ip}/32         md5\" | sudo tee -a /var/lib/pgsql/17/data/pg_hba.conf",
-
-        # Создаём пользователя student (если не существует)
         "sudo -u postgres psql -tc \"SELECT 1 FROM pg_roles WHERE rolname='student'\" | grep -q 1 || sudo -u postgres psql -c \"CREATE ROLE student LOGIN PASSWORD 'student';\"",
-
-        # Перезапускаем PostgreSQL
         "sudo systemctl restart postgresql"
     ]
     execute_commands(ssh, commands)
 
-# --- Проверка подключения пользователя student со второго сервера ---
 def test_student_connection(host, key_path, db_host):
     ssh = connect_ssh(host, key_path)
     if not ssh:
@@ -166,7 +151,6 @@ def test_student_connection(host, key_path, db_host):
 
     ssh.close()
 
-# --- основной запуск ---
 def main():
     parser = argparse.ArgumentParser(description="PostgreSQL Auto Installer")
     parser.add_argument("--hosts", required=True, help="Адреса серверов через запятую")
@@ -236,8 +220,7 @@ def main():
                 log_error.error("Неизвестный дистрибутив")
                 ssh.close()
                 return
-
-            # Конфигурация PostgreSQL доступа
+                
             other_host = [h for h in hosts if h != target][0]
             console.print(f"[cyan]Настройка доступа для пользователя student с IP {other_host}...[/cyan]")
             log_install.info(f"Настройка доступа к PostgreSQL с {other_host}")
@@ -251,7 +234,6 @@ def main():
             log_install.info("Установка завершена успешно")
         ssh.close()
 
-        # Проверка подключения student со второго сервера
         test_student_connection(other_host, key_path, target)
 
 if __name__ =="__main__":
