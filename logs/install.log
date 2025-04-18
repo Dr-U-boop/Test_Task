@@ -1,1 +1,67 @@
+2025-04-19 01:56:43,509 - INFO - [connect] Введены хосты: 192.168.1.74,192.168.1.70
+2025-04-19 01:56:43,510 - INFO - [connect] Путь к ключу: /home/niggermain/.ssh/id_ed25519
+2025-04-19 01:56:43,551 - INFO - [connect] 192.168.1.74 доступен по SSH
+2025-04-19 01:56:43,557 - INFO - [connect] 192.168.1.70 доступен по SSH
+2025-04-19 01:56:43,665 - INFO - Connected (version 2.0, client OpenSSH_9.2p1)
+2025-04-19 01:56:43,861 - INFO - Authentication (publickey) successful!
+2025-04-19 01:56:45,437 - INFO - [status] 192.168.1.74 CPU: 4.09%, RAM: 27.30%
+2025-04-19 01:56:45,467 - INFO - Connected (version 2.0, client OpenSSH_8.7)
+2025-04-19 01:56:45,635 - INFO - Authentication (publickey) successful!
+2025-04-19 01:56:46,068 - INFO - [status] 192.168.1.70 CPU: 4.75%, RAM: 38.07%
+2025-04-19 01:56:46,074 - INFO - [status] Выбран сервер для установки: 192.168.1.74
+2025-04-19 01:56:46,238 - INFO - Connected (version 2.0, client OpenSSH_9.2p1)
+2025-04-19 01:56:46,521 - INFO - Authentication (publickey) successful!
+2025-04-19 01:56:46,748 - INFO - [install] Установка PostgreSQL на 192.168.1.74 (debian)
+2025-04-19 01:56:46,748 - INFO - [install] Выполняется команда: sudo apt-get install -y lsb-release
+2025-04-19 01:56:50,728 - INFO - [install] Чтение списков пакетов…
+Построение дерева зависимостей…
+Чтение информации о состоянии…
+Уже установлен пакет lsb-release самой новой версии (12.0-1).
+Обновлено 0 пакетов, установлено 0 новых пакетов, для удаления отмечено 0 пакетов, и 0 пакетов не обновлено.
+2025-04-19 01:56:50,728 - INFO - [install] Выполняется команда: sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+2025-04-19 01:56:50,920 - INFO - [install] Выполняется команда: wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+2025-04-19 01:56:56,702 - INFO - [install] OK
+2025-04-19 01:56:56,705 - ERROR - [error] Warning: apt-key is deprecated. Manage keyring files in trusted.gpg.d instead (see apt-key(8)).
+2025-04-19 01:56:56,705 - INFO - [install] Выполняется команда: sudo apt-get update
+2025-04-19 01:57:11,916 - INFO - [install] Сущ:1 http://apt.postgresql.org/pub/repos/apt bookworm-pgdg InRelease
+Сущ:2 http://security.debian.org/debian-security bookworm-security InRelease
+Сущ:3 http://deb.debian.org/debian bookworm InRelease
+Сущ:4 http://deb.debian.org/debian bookworm-updates InRelease
+Чтение списков пакетов…
+2025-04-19 01:57:11,918 - ERROR - [error] W: http://apt.postgresql.org/pub/repos/apt/dists/bookworm-pgdg/InRelease: Key is stored in legacy trusted.gpg keyring (/etc/apt/trusted.gpg), see the DEPRECATION section in apt-key(8) for details.
+2025-04-19 01:57:11,918 - INFO - [install] Выполняется команда: locale
+2025-04-19 01:57:12,078 - INFO - [install] LANG=ru_RU.UTF-8
+LANGUAGE=
+LC_CTYPE="ru_RU.UTF-8"
+LC_NUMERIC="ru_RU.UTF-8"
+LC_TIME="ru_RU.UTF-8"
+LC_COLLATE="ru_RU.UTF-8"
+LC_MONETARY="ru_RU.UTF-8"
+LC_MESSAGES="ru_RU.UTF-8"
+LC_PAPER="ru_RU.UTF-8"
+LC_NAME="ru_RU.UTF-8"
+LC_ADDRESS="ru_RU.UTF-8"
+LC_TELEPHONE="ru_RU.UTF-8"
+LC_MEASUREMENT="ru_RU.UTF-8"
+LC_IDENTIFICATION="ru_RU.UTF-8"
+LC_ALL=
+2025-04-19 01:57:12,078 - INFO - [install] Выполняется команда: export LC_CTYPE=ru_RU.UTF8
+2025-04-19 01:57:12,198 - INFO - [install] Выполняется команда: export LC_COLLATE=ru_RU.UTF8
+2025-04-19 01:57:12,289 - INFO - [install] Выполняется команда: locale -a | grep ru_RU
+2025-04-19 01:57:12,393 - INFO - [install] ru_RU.utf8
+2025-04-19 01:57:12,393 - INFO - [install] Выполняется команда: sudo locale-gen ru_RU.UTF8
+2025-04-19 01:57:42,799 - INFO - [install] Generating locales (this might take a while)...
+  ru_RU.UTF-8... done
+Generation complete.
+2025-04-19 01:57:42,799 - INFO - [install] Выполняется команда: sudo apt-get install -y postgresql-17
+2025-04-19 01:57:46,995 - INFO - [install] Чтение списков пакетов…
+Построение дерева зависимостей…
+Чтение информации о состоянии…
+Уже установлен пакет postgresql-17 самой новой версии (17.4-1.pgdg120+2).
+Обновлено 0 пакетов, установлено 0 новых пакетов, для удаления отмечено 0 пакетов, и 0 пакетов не обновлено.
+2025-04-19 01:57:46,996 - INFO - [install] Выполняется команда: sudo -u postgres psql -c 'SELECT version();'
+2025-04-19 01:57:48,535 - INFO - [install] version                                                       
+---------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 17.4 (Debian 17.4-1.pgdg120+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14) 12.2.0, 64-bit
+(1 строка)
 
